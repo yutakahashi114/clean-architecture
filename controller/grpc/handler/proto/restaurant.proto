@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package proto;
+
+service RestaurantService {
+  rpc GetRestaurantByID (GetRestaurantByIDRequest) returns (GetRestaurantByIDResponse) {}
+}
+
+message GetRestaurantByIDRequest {
+    uint64 id = 1;
+}
+
+message GetRestaurantByIDResponse {
+   Restaurant Restaurant = 1;
+}
+
+message Restaurant {
+    uint64          id         = 1;
+    string          name       = 2;
+    repeated string tags       = 3;
+    uint64          client_uid = 4;
+}

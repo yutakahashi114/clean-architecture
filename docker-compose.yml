@@ -1,0 +1,43 @@
+version: "3.7"
+services:
+  server:
+    build:
+      context: .
+    volumes:
+      - .:/go/src:cached
+    environment:
+      PORT: 8080
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: database
+      DB_HOST: postgres
+      PROJECT_ID: test-project-id
+      FIRESTORE_EMULATOR_HOST: firestore:8082
+      GRPC_HOST: localhost:8081
+  firestore:
+    build:
+      context: ./data/firestore
+    environment:
+      PROJECT_ID: test-project-id
+    volumes:
+      - ./data/firestore:/firestore
+    command: /bin/bash /firestore/start.sh
+  postgres:
+    image: postgres:11
+    volumes:
+      - ./data/postgres/data:/var/lib/postgresql/data
+      - ./data/postgres/init:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      PGPASSWORD: password
+      POSTGRES_DB: database
+      DATABASE_HOST: localhost
+      TZ: "Asia/Tokyo"
+  grpc:
+    image: grpc/go:1.0
+    tty: true
+    working_dir: /go/src
+    volumes:
+      - ./controller/grpc/handler/proto:/go/src/proto:cached
+      - ./infrastructure/grpc/proto:/go/src/other/proto:cached
